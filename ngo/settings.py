@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['ngo.herokuapp.com']
+ALLOWED_HOSTS = ['django-ngo.herokuapp.com']
 
 
 # Application definition
