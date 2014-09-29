@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="content">
+	<h2>ACTIVITY</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+		</ul>
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+	<form role="form" method="post" action="{% url 'activity' %}">
+		{% csrf_token %}
+		<h3>Add New Activity</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th>Year</th>
+				<th>Month</th>
+				<th>Week</th>
+			</tr>
+			<tr>
+				<td>From</td>
+				{{add_form.from_date}}
+			</tr>
+			<tr>
+				<td>To</td>
+				{{add_form.to_date}}
+				{{add_form.prevtime_f}}
+				{{add_form.prevtime_t}}
+			</tr>
+		</table>
+		<input type="submit" name="add" value="Add New Activity" />
+	</form>
+
+	<form role="form" method="post" action="{% url 'activity' %}">
+		{% csrf_token %}
+		<h3>View / Edit Past Activities</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th>Year</th>
+				<th>Month</th>
+				<th>Week</th>
+			</tr>
+			<tr>
+				<td>From</td>
+				{{view_form.from_date}}
+			</tr>
+			<tr>
+				<td>To</td>
+				{{view_form.to_date}}
+				{{view_form.prevtime_f}}
+				{{view_form.prevtime_t}}
+			</tr>
+		</table>
+		<input type="submit" name="view" value="View / Edit Past Activities" />
+	</form>
+</div>
+{% endblock %}

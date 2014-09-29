@@ -1,0 +1,8 @@
+<ul class="user-panel">
+	{% if user.is_authenticated %}
+	<li><span class="bold">USER NAME:</span> {{user.username}}</p>
+	<li><span class="bold">CENTER:</span> {{user.username}}</p>
+	<li class="logout"><a href="{% url 'logout' %}">Log-out</a></p>
+
+	{% endif %}
+</ul>

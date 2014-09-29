@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script type="text/javascript">
+<!--
+function headsup()
+	{return confirm('Are you sure you want to delete this entry?');}
+-->
+</script>
+<div id="content">
+	<h2>PAST ACTIVITY</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+			<li><a href="{% url 'activity' %}">BACK TO ACTIVITY PAGE</a></li>
+		</ul>
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+	<div>
+		<h3>Activity For</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th>Year</th>
+				<th>Month</th>
+				<th>Week</th>
+			</tr>
+			<tr>
+				<td>From</td>
+				{{form.from_date}}
+			</tr>
+			<tr>
+				<td>To</td>
+				{{form.to_date}}
+			</tr>
+		</table>
+		{% if contents %}
+		<table>
+			<tr>
+				<th>Center</th>
+				<th>Activity</th>
+				<th>Number of Direct Beneficiaries</th>
+				<th>Number of Indirect Beneficiaries</th>
+				<th>Net Cashflow</th>
+				<th></th>
+				<th></th>
+			</tr>
+		
+		{% for c in contents %}
+			<tr>
+				<td>{{c.center}}</td>
+				<td>{{c.a}}</td>
+				<td>{{c.b}}</td>
+				<td>{{c.c}}</td>
+				<td>{{c.d}}</td>
+				<td><a href="{% url 'edit_activity' c.id %}">EDIT<a></td>
+				<td><a onclick='return headsup();' href="{% url 'delete_activity' c.id %}">DELETE<a></td>
+			</tr>
+
+		{% endfor %}
+		</table>
+		<div class="pagenation">
+			<span class="step-links">
+        		{% if contents.has_previous %}
+            		<a href="?page={{ contents.previous_page_number }}">previous</a>
+        		{% endif %}
+
+        		<span class="current">
+            		Page {{ contents.number }} of {{ contents.paginator.num_pages }}.
+        		</span>
+
+        		{% if contents.has_next %}
+            		<a href="?page={{ contents.next_page_number }}">next</a>
+        		{% endif %}
+    		</span>
+		</div>
+		{% else %}
+		<p>No results.</p>
+		{% endif %}
+
+	</div>
+
+
+
+</div>
+{% endblock %}

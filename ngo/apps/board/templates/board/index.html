@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="content">
+	<h2>HOME PAGE</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+	<ul>
+		<li><a href="
+		{% url 'activity' %}
+		">Activities</a></li>
+		<li><a href="
+		{% url 'beneficiary' %}
+		">Beneficiary</a></li>
+	</ul>
+</div>
+{% endblock %}

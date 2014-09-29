@@ -60,8 +60,7 @@ WSGI_APPLICATION = 'ngo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
     }
 }
 
@@ -73,7 +72,7 @@ DATABASES['default'] = dj_database_url.config()
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 
@@ -91,7 +90,13 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR,'templates'),
+    os.path.join(BASE_DIR,'templates/common'),
+    os.path.join(BASE_DIR,'templates/widget'),
+)
 
+LOGIN_URL='/user/login/'
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

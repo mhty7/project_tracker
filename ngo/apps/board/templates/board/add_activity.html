@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<script type="text/javascript">
+
+$(document).ready(function(){
+	function updateElementIndex(el,prefix,ndx){
+		var id_regex=new RegExp('(' + prefix + '-\\d+-)');
+		var replacement = prefix + '-' + ndx + '-';
+		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex,replacement));
+		if (el.id) el.id = el.id.replace(id_regex,replacement);
+		if (el.name) el.name = el.name.replace(id_regex,replacement);
+	}
+
+	function deleteForm(btn,prefix){
+		var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+		if (formCount > 1){
+			var root = $(btn).closest('form');
+			$(btn).closest('.item').remove();
+			var forms = root.children('.item');
+			$('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+			var i = 0;
+			for (formCount = forms.length; i < formCount; i++){
+				$(forms.get(i)).children().children().each(function(){
+					updateElementIndex(this,prefix,i);
+				});
+			}
+			
+		}else{
+			alert("You have to enter at least one todo item.");
+		}
+		return false;
+	}
+
+	function addForm(btn,prefix){
+		var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+		var maxCount = parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val());
+		if(formCount<maxCount){
+			var root = $(btn).closest('form');
+			var last = root.children('.item:last')
+			var row = root.children('.item:first').clone(false).get(0);
+			if(row == undefined){
+				return false
+			}
+			$(row).removeAttr('id').hide().insertAfter(last).slideDown(300);
+			$(row).find('.errorlist').remove();
+			$(row).find('.sub').remove()
+			$(row).children().removeClass('error');
+
+			$(row).children().children().each(function(){
+				updateElementIndex(this,prefix,formCount);
+				if($(this).attr('type') == 'text'){
+					$(this).val('');
+				}
+				else if ($(this).is('select')){
+					$(this).children().each(function(){
+						$(this).removeAttr('selected');
+					});
+					$(':first-child',this).attr('selected','selected');
+				}
+				else if ($(this).attr('type') == 'hidden'){
+					$(this).removeAttr('value');
+				}
+
+			});
+
+			$(row).find('.delete').click(function(){
+				return deleteForm(this,prefix);
+			});
+			$(row).find('.load').click(function(){
+				return loadPerson(this,prefix);
+			});
+
+			$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+
+		}else{
+			alert("Sorry, you can only enter a maximum of "+maxCount+" items.");
+		}
+		return false;
+
+	}
+
+	function loadPerson(btn,prefix){
+		var json = {{ data|safe }};
+		
+		var root = $(btn).closest('form');
+		var parent=$(btn).parent();
+		parent.css('position','relative');
+		var base=$('<div>');
+		base.addClass('sub');
+		var content=$('<div>');
+		base.css('position','absolute');
+		base.css('top','-100px');
+		base.css('left','450px');
+		base.css('background','#000');
+		base.css('width','200px');
+
+		content.css('height','80px');
+		content.css('overflow-y','scroll');
+		content.css('color','#fff');
+
+		base.css('padding','10px 0px 10px 5px');
+		var pointer=$('<div>');
+
+		pointer.css('border','5px solid transparent');
+		pointer.css('border-right-color','#000');
+		pointer.css('position','absolute');
+		pointer.css('z-index',2);
+		pointer.css('top','5px');
+		pointer.css('left','-15px');
+
+		var img_p=$('<p>');
+		var img=$('<img>');
+		img.attr('src',"{% static 'image/btn_exit.png' %}");
+		img.css('cursor','pointer');
+		img_p.append(img)
+		img_p.css('text-align','right');
+		img_p.css('padding','0 5px 0 0');
+
+		base.append(img_p);
+		base.append(content);
+		base.append(pointer);
+		parent.append(base);
+
+		img_p.click(function(e){
+			$(root).find('.sub').remove();
+			return false;
+		});
+
+		
+		var ul=$('<ul>');
+		if(Object.keys(json).length == 0){
+			var li=$('<li>');
+			li.html('<li>No registered person.</li>');
+			ul.append(li);
+		}
+		else{
+			for (var i in json){
+				var result=json[i];
+				var li=$('<li>');
+				li.html('<li>['+result.id+'] '+result.fname+' '+result.lname+'</li>');
+				li.css('cursor','pointer');
+				li.click(function(e){
+					var root = $(e.target).closest('ul.item');
+					id=$(e.target).html().match('('+'^\\[(\\d+)\\]'+')')[2];
+					$(root).children().children().each(function(){
+						var id_regex=new RegExp('((' + prefix + '-\\d+-)(.+)$)');
+						if($(this).attr('name')){
+							var arr = $(this).attr('name').match(id_regex);
+							var n=arr[3];
+							var pre=arr[2];
+							var token=json[id]
+							if (n=='ty'){
+								$(this).children().each(function(){
+									if($(this).val()==token.ty){
+										$(this).attr('selected','selected');
+									}
+									else{
+										$(this).removeAttr('selected');
+									}
+								});
+							}
+							else if(n=='lname'){
+								if($(this).attr('type') == 'text'){
+									$(this).val(token.lname);
+								}
+							}
+							else if(n=='fname'){
+								if($(this).attr('type') == 'text'){
+									$(this).val(token.fname);					
+								}
+							}
+							else if(n=='temp_id'){
+								if($(this).attr('type') == 'hidden'){
+									$(this).val(token.id);
+								}
+								
+							}
+							else if(n=='id'){
+								if($(this).attr('type') == 'hidden'){
+									$(this).val(token.id);	
+								}
+							}
+						}
+					$(root).find('.sub').remove()
+				});
+				return false;
+				});
+				ul.append(li);
+			}
+		}
+		content.html(ul);
+		return false;
+
+	}
+
+	$("#add").click(function(){
+		return addForm(this,'form');
+	});
+
+	$(".load").click(function(){
+		return loadPerson(this,'form');
+	});
+
+	$(".delete").click(function(){
+		return deleteForm(this,'form');
+	});
+
+});
+</script>
+<div id="content">
+	<h2>ADD ACTIVITY</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+			<li><a href="{% url 'activity' %}">BACK TO ACTIVITY PAGE</a></li>
+		</ul>
+	</div>
+
+	{% if from_d and to_d %}
+	<form role="form" method="post" action="{% url 'add_activity' from_d to_d %}">
+	{% elif act_id %}
+	<form role="form" method="post" action="{% url 'edit_activity' act_id %}">
+	{% endif %}
+		
+		{% csrf_token %}
+		{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+		{% endif %}
+
+		<h3>Activity For</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th>Year</th>
+				<th>Month</th>
+				<th>Week</th>
+			</tr>
+			<tr>
+				<td>From</td>
+				{{dform.from_date}}
+			</tr>
+			<tr>
+				<td>To</td>
+				{{dform.to_date}}
+				{{dform.prevtime_f}}
+				{{dform.prevtime_t}}
+			</tr>
+		</table>
+
+		
+		<h3>Activity</h3>
+		<ul>
+		{{aform.as_ul}}
+		</ul>
+
+		<h3>Beneficiaries</h3>
+		{{bform.management_form}}
+		{% for form in bform.forms %}
+		<ul class="item">
+		{{form.as_ul}}
+		<li style=""><a class="load" href="#">Load person</a></li>
+		<li style=""><a class="delete" href="#">Delete</a></li>
+		</ul>
+		{% endfor %}
+		<p><a id="add" href="#">Add another beneficiary</a></p>
+		<input type="submit" name="save" value="SAVE" />
+	</form>
+</div>
+{% endblock %}

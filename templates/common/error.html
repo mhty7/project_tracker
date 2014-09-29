@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='panel'>
+	<p>{{meg}}</p>
+	<p><a href="
+		{% if back %}
+		{{back}}
+		{% else %}
+		{{request.META.HTTP_REFERER}}
+		{% endif %}
+		">Go Back</a></p>
+</div>
+{% endblock %}

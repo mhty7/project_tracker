@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="content">
+	<h2>BENEFICIARY DATA</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+			<li><a href="{% url 'beneficiary' %}">BACK TO BENEFICIARIES PAGE</a></li>
+		</ul>
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+	<form role="form" method="post" action="{% url 'edit_beneficiary' ben_id %}">
+		{% csrf_token %}
+		<h3>Beneficiary</h3>
+		<ul>
+		{{bform.as_ul}}
+		</ul>
+		<input type="submit" name="save" value="SAVE" />
+	</form>
+
+
+	<form role="form" method="post" action="{% url 'edit_beneficiary' ben_id %}">
+		{% csrf_token %}
+		<h3>Search for activities</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th>Year</th>
+				<th>Month</th>
+				<th>Week</th>
+			</tr>
+			<tr>
+				<td>From</td>
+				{{dform.from_date}}
+			</tr>
+			<tr>
+				<td>To</td>
+				{{dform.to_date}}
+				{{dform.prevtime_f}}
+				{{dform.prevtime_t}}
+			</tr>
+		</table>
+		<input type="submit" name="search" value="Search Activities" />
+	</form>
+
+
+
+</div>
+{% endblock %}

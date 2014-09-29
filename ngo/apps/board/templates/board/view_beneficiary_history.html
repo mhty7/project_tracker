@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="content">
+	<h2>BENEFICIARY DATA</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+			<li><a href="{% url 'beneficiary' %}">BACK TO BENEFICIARIES PAGE</a></li>
+		</ul>
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+	<div>
+		<h3>Beneficiary</h3>
+		<p><span class="bold">Name:</span> {{bens_contents.fname}} {{bens_contents.lname}}</p>
+		<p><span class="bold">Beneficiary Type:</span> {{bens_contents.ty}}</p>
+		<p><span class="bold">Activities Attended:</span></p>
+		
+		{% if contents %}
+		<form role="form" method="post" action="{% url 'view_beneficiary_history' from_d to_d ben_id %}">
+		{% csrf_token %}
+		{{forms.management_form}}
+		<table>		
+			<tr>
+				<th>Center</th>
+				<th>Activity</th>
+				<th>Description</th>
+				<th>Week</th>
+				<th>Month</th>
+				<th>Year</th>
+				<th></th>
+			</tr>
+		{% for c in contents %}
+			<tr>
+				<td>{{c.center}}</td>
+				<td>{{c.a}}</td>
+				<td>{{c.b}}</td>
+				<td>{{c.c.from_date.2}}</td>
+				<td>{{c.c.from_date.0}}</td>
+				<td>{{c.c.from_date.1}}</td>
+				<td>
+					{% if c.d %}
+					{% for field in c.d %}
+						{{ field.errors }}
+						{{ field }}
+					{% endfor %}
+					{% endif %}
+
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+		<input type="submit" name="save" value="SAVE" />
+		</form>
+		{% else %}
+		<p>No results.</p>
+		{% endif %}
+
+	</div>
+</div>
+{% endblock %}

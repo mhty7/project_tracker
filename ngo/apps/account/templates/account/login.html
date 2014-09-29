@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="content" class="login">
+	<form role="form" method="post" action="{% url 'login' %}">
+		<h2>Login</h2>
+		{% csrf_token %}
+		{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+		{% endif %}
+
+		<ul>
+			<li>
+				<label for="username">username</label>
+				<input name="username" type="text">
+			</li>
+
+			<li>
+				<label for="password">password</label>
+				<input name="password" type="password">
+			</li>
+		</ul>
+		<input type="hidden" name="next" value="{{next}}">
+		<input type="submit" name="login" value="Log-in" />
+		
+	</form>
+</div>
+
+{% endblock %}
