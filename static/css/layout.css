@@ -70,6 +70,38 @@ input,label,select,textarea {
 	height:100%;
 	margin:0 auto -100px;
 }
+
+
+#header{
+	width:80%;
+	margin:30px auto;
+	text-align:left;
+}
+
+#header h2{
+	margin:0 0 0.5em;
+	line-height: 1.4em;
+	font-size: 250%;
+}
+
+
+#header h2{
+	float: left;
+}
+
+#header ul{
+	margin-top: 20px;
+	float: right;
+}
+
+#header ul li{
+	float: left;
+	margin-left: 10px;
+}
+
+
+
+
 #content{
 	width:80%;
 	margin:30px auto;
@@ -110,14 +142,39 @@ input,label,select,textarea {
 	margin-bottom:20px;
 
 }
+#content ul li {
+	margin-bottom: 0.2em;
+}
 #content p{
 	margin-bottom:3px;
 
 
 }
+
+#content span.description, #content span.helptext {
+	font-size: 80%;
+	color:#333333;
+}
 #content table{
 	margin-bottom: 10px;
 }
+
+#content table tr th.beneficiary{
+	width:60%;
+}
+
+#content table tr td.beneficiary{
+	word-break: keep-all;
+}
+
+#content table tr td.beneficiary span.ben{
+	padding: 2px 3px 2px 3px;
+	margin-right: 3px;
+	word-wrap: keep-all;
+}
+
+
+
 #content form{
 	margin-bottom: 40px;
 }
@@ -131,6 +188,10 @@ input,label,select,textarea {
 }
 #content form select{
 	margin-bottom:5px;
+	width: 200px;
+}
+#content p.sort select{
+	display:inline;
 }
 #content form input[type=text],#content form input[type=password]{
 	margin-bottom:5px;
@@ -148,6 +209,18 @@ input,label,select,textarea {
 	text-align: center;
 
 }
+.errorlist{
+	width: 80%;
+	color: red;
+}
+#content form table select,#content form table input[type=text],#content form table input[type=password]{
+	width: 80%;
+}
+#content table.inside tr,#content table.inside tr td,#content table.inside tr th{
+	border:none;
+	background:none;
+}
+
 #content form textarea{
 	margin-bottom:5px;
 	height:100px;
@@ -161,16 +234,19 @@ input,label,select,textarea {
 }
 
 #content p a#add{
-	background-image:url(../image/add_user.jpg);
+	/*background-image:url(../image/add_user.jpg);
 	background-position:left top;
 	background-repeat:no-repeat;
 	padding:8px 0 0 35px;
-	min-height:30px;
+	min-height:30px;*/
 }
 
 
 
-
+#content p.active_delete{
+	text-align: right;
+	margin-bottom: 10px;
+}
 
 
 ul.messages {
@@ -186,9 +262,50 @@ ul.messages {
 	padding:10px;
 	text-align:center;
 	background-color:#FFFFCC;
-
+	border:1px solid #FFFF00;
 
 	
+}
+
+
+
+#content div.statistics .wrap{
+
+
+}
+
+#content div.statistics .left{
+	margin-top: 20px;
+	float:left;
+	width: 50%;
+}
+#content div.statistics .left table{
+	width: 95%;
+}
+#content div.statistics .left table tr th{
+	width: 30%;
+}
+
+#content div.statistics .right{
+	margin-top: 20px;
+	float:right;
+	width: 50%;
+}
+
+#content div.statistics .right #form_ajax{
+	overflow-y:auto;
+	height:200px;
+	padding: 10px;
+	background-color: #E6E6E6;
+	border:1px solid #999;
+
+}
+#content div.statistics .right #form_ajax .item{
+	border-bottom: 1px dotted #999;
+	padding-top: 10px;
+	font-size: 80%;
+	color:#333333;
+
 }
 
 

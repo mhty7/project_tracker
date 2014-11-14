@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<script type="text/javascript">
+<!--
+function headsup()
+	{return confirm('Are you sure you want to delete this entry?');}
+
+$(document).ready(function(){
+
+	function loadBens(btn,prefix){
+		var root = $(btn).closest('form');
+		var tr = $(btn).closest('tr.item');
+		var bcol = $(tr).children('td.beneficiary');
+		var c_id=$(tr).attr('cid');
+		var g_id=$(tr).attr('gid');
+
+		var parent=$(btn).parent();
+		parent.css('position','relative');
+		var base=$('<div>');
+		base.addClass('sub');
+		var content=$('<div>');
+		base.css('position','absolute');
+		base.css('top','-205px');
+		base.css('left','-80px');
+		base.css('background','rgba(0,0,0,0.8)');
+		base.css('width','200px');
+		base.css('padding','10px 0px 10px 5px');
+		base.css('box-shadow','3px 3px 3px 0px gray');
+
+		content.css('height','160px');
+		content.css('overflow-y','auto');
+		content.css('color','#fff');
+
+		
+		var pointer=$('<div>');
+
+		pointer.css('border','5px solid transparent');
+		pointer.css('border-top-color','rgba(0,0,0,0.8)');
+		pointer.css('position','absolute');
+		pointer.css('z-index',2);
+		pointer.css('top','205px');
+		pointer.css('left','100px');
+
+		var img_p=$('<p>');
+		var img=$('<img>');
+		img.attr('src',"{% static 'image/btn_exit.png' %}");
+		img.css('cursor','pointer');
+		img_p.append(img)
+		img_p.css('text-align','right');
+		img_p.css('padding','0 5px 0 0');
+		img_p.css('margin','0');
+
+		var img_loader=$('<img>');
+		img_loader.attr('src',"{% static 'image/ajax-loader.gif' %}")
+
+		base.append(img_p);
+		base.append(content);
+		base.append(pointer);
+		parent.append(base);
+
+		img_p.click(function(e){
+			$(tr).find('.sub').remove();
+			return false;
+		});
+		var ul=$('<ul>');
+		var lli=$('<li>');
+		lli.append(img_loader);
+		lli.css('text-align','center');
+		ul.append(lli);
+
+		var func=function(e){
+			var id=$(e.target).html().match('('+'^\\[(\\d+)\\]'+')')[2];
+			$.ajax({
+			url: "{% url 'beneficiary_add_ajax' %}",
+			data: {
+				gid:g_id,
+				bid:id,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			type: 'POST',
+			dataType: 'json',
+			cache: false,
+			success: function(responseJSON) {
+				var result=responseJSON.beneficiaries;
+
+				var span=$('<span class="ben">');
+				var aa=$('<a href="'+result.url+'">');
+				aa.html(result.lname+' '+result.fname);
+				var ad=$('<a class="delete" href="#">');
+				$(span).attr('bid',result.id);
+				ad.html("[×]");
+				ad.click(function(){return removeBen(this,'form');});
+				span.append(aa);
+				span.append(ad);
+				span.hide();
+				bcol.append(span);
+
+				/*
+				if($(bcol).children('span').length==0){
+					bcol.append(span);
+
+				}
+				else{
+					var s=$('<span>');
+					s.html(', ')
+					bcol.append(s);
+					bcol.append(span);
+				}*/
+				$(span).fadeIn('fast');
+
+				
+			},
+			error: function(xhr,errmsg,err) {
+				alert('Attempt failed.');
+			},
+			complete: function() {
+
+			}
+			});
+			
+			$(root).find('.sub').remove();
+			return false;
+		}
+
+		$.ajax({
+			url: "{% url 'beneficiary_list_ajax' %}",
+			data: {
+				gid:g_id,
+				cid:c_id,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			type: 'POST',
+			dataType: 'json',
+			cache: false,
+			success: function(responseJSON) {
+				lli.remove();
+				if (responseJSON.beneficiaries.length>0){
+					for (var i in responseJSON.beneficiaries){
+						var result=responseJSON.beneficiaries[i];
+						var li=$('<li>');
+						li.html('['+result.id+'] '+result.lname+' '+result.fname);
+						li.css('cursor','pointer');
+						li.click(func);
+						ul.append(li);
+					}
+				}
+				else{
+					lli.remove();
+					var li=$('<li>');
+					li.html('No more beneficiaries found to add.');
+					ul.append(li);
+				}
+			},
+			error: function(xhr,errmsg,err) {
+				
+			},
+			complete: function() {
+			}
+		});
+		content.html(ul);
+
+
+
+		return false;
+	}
+
+
+	function removeBen(btn,prefix){
+		var root = $(btn).closest('form');
+		var tr = $(btn).closest('tr.item');
+		var bcol = $(tr).children('td.beneficiary');
+		var span = $(btn).closest('span');
+		var c_id=$(tr).attr('cid');
+		var g_id=$(tr).attr('gid');
+		var b_id=$(span).attr('bid');
+
+		$.ajax({
+			url: "{% url 'beneficiary_remove_ajax' %}",
+			data: {
+				gid:g_id,
+				bid:b_id,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			type: 'POST',
+			dataType: 'json',
+			cache: false,
+			success: function(responseJSON) {
+				if (responseJSON.beneficiaries){
+					$(span).fadeOut('fast',function(){
+							$(this).remove();
+					});
+
+					/*
+					if($(bcol).children().index(span)==0){
+						$(span).fadeOut('fast',function(){
+							$(this).remove();
+							$(bcol).find('span:first').remove();
+						});
+					}
+					else{
+						$(span).fadeOut('fast',function(){
+							$(this).remove();
+							$(bcol).find('span:last').remove();
+						});
+					}*/
+					
+
+				}
+			},
+			error: function(xhr,errmsg,err) {
+				alert('Attempt failed.');
+				
+			},
+			complete: function() {
+			}
+		});
+
+
+		return false;
+	}
+
+	$(".add").click(function(){
+		return loadBens(this,'form');
+	});
+	$(".delete").click(function(){
+		return removeBen(this,'form');
+	});
+
+});
+
+-->
+</script>
+<div id="content">
+	<h2>MY GROUP</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+		</ul>
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+
+	<form role="form" method="post" action="{% url 'mygroup' %}">
+	{% csrf_token %}
+	<h3>Add New Group</h3>
+		<ul>
+		{{gform.as_ul}}
+		</ul>
+	<input type="submit" name="add" value="ADD" />
+	</form>
+
+
+	<div>
+		<h3>My Groups</h3>
+
+		{% if contents %}
+		<form method="post" name="mygroup" >
+		{% csrf_token %}
+		<table>
+			<tr>
+				<th>Center</th>
+				<th>Group Name</th>
+				<th class="beneficiary">Beneficiaries</th>
+				<th></th>
+				<th></th>
+			</tr>
+		
+		{% for c in contents %}
+			<tr class="item" cid="{{c.cid}}" gid="{{c.id}}">
+				<td>{{c.center}}</td>
+				<td>{{c.a}}</td>
+				<td class="beneficiary">{% for b in c.b.all %}<span class="ben" bid="{{b.id}}"><a href="{% url 'edit_beneficiary' b.id %}">{{b.lname}} {{b.fname}}</a><a class="delete" href="#">[×]</a></span>{% endfor %}</td>
+				<td><a class="add" href="#">ADD</a></td>
+				<td><a onclick='return headsup();' href="{% url 'delete_group' c.id %}">DELETE<a></td>
+			</tr>
+
+		{% endfor %}
+		</table>
+		</form>
+		<div class="pagenation">
+			<span class="step-links">
+        		{% if contents.has_previous %}
+            		<a href="?page={{ contents.previous_page_number }}">Prev</a>
+        		{% endif %}
+
+        		{% for i in page_numbers %}
+        			{% if contents.number == i  %}
+        			<span class="current">{{i}}</span>
+        			{% else %}
+        			<a href="?page={{ i }}">{{i}}</a>
+        			{% endif %}
+        		{% endfor %}
+        		{% if contents.has_next %}
+            		<a href="?page={{ contents.next_page_number }}">Next</a>
+        		{% endif %}
+        		<span class="current">
+            		Page {{ contents.number }} of {{ contents.paginator.num_pages }}.
+        		</span>
+    		</span>
+		</div>
+		{% else %}
+		<p>No results.</p>
+		{% endif %}
+
+	</div>
+
+
+
+</div>
+{% endblock %}

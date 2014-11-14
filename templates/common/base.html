@@ -7,10 +7,28 @@
 	<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 	<link href="{% static 'css/reset.css' %}" rel="stylesheet">
 	<link href="{% static 'css/layout.css' %}" rel="stylesheet">
+	<link href="{% static 'css/margin.css' %}" rel="stylesheet">
+	
+
 	<title>{% block title %}{% endblock %}</title>
 </head>
 <body>
 	<div id="wrapper">
+		<div id='header' class="clearfix">
+			<h2><a href="{% url 'index' %}">Track Project</a></h2>
+			
+			{% if user.is_authenticated %}
+			<ul class="clearfix">
+			<li class="statistics"><a href="{% url 'statistics' %}">Statistics</a></li>
+			<li class="activities"><a href="{% url 'activity' %}">Activities</a></li>
+			<li class="beneficiaries"><a href="{% url 'beneficiary' %}">Beneficiaries</a></li>
+			<li class="mygroups"><a href="{% url 'mygroup' %}">My Groups</a></li>
+			<li class="logout"><a href="{% url 'logout' %}">Log-out</a></li>
+			</ul>
+			{% endif %}
+
+			
+		</div>
 	{% block content %}{% endblock %}
 	</div>
 </body>

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	function block_form(){
+		//$("#loading").show();
+		$("select").attr('disabled','disabled');
+		$("input").attr('disabled','disabled');
+	}
+	function unblock_form(){
+		//$("#loading").hide();
+		$("select").removeAttr('disabled');
+		$("input").removeAttr('disabled');
+		$("#form_ajax_error").find(".errorlist").remove();
+		$("#form_ajax_error").hide();
+
+	}
+
+	function createPost(target){
+
+		var id_regex=new RegExp('((' + 'id_' + ')(.+)$)');
+		var tr = $(target).find('table tr');
+		var data = {};
+		$(tr).children().children().each(function(){
+			if($(this).attr('id')){
+				var id = $(this).attr('id').match(id_regex);
+
+				if($(this).is('select')){
+					data[id[3]]=$('#id_' + id[3]).val();
+				}
+				else if($(this).attr('type') == 'checkbox' && $('#id_' + id[3]).prop('checked') ){
+					data[id[3]]='on';
+				}
+				
+			}
+		});
+		data['csrfmiddlewaretoken']='{{ csrf_token }}'
+		block_form();
+		
+		$.ajax({
+			url: "{% url 'statistics' %}",
+			data: data,
+			type: 'POST',
+			dataType: 'json',
+			cache: false,
+			success: function(responseJSON) {
+				unblock_form();
+				console.log(responseJSON);
+				var div=$('<div class="item">');
+				div.html(responseJSON.contents);
+				
+				$("#form_ajax").prepend(div);
+
+							
+			},
+			error: function(errmsg) {
+				unblock_form();
+				var errors = JSON.parse(errmsg.responseText);
+				var p=$('<p class="errorlist">');
+				p.html(errors['non_field_errors']);
+				$("#form_ajax_error").append(p);
+				$("#form_ajax_error").show();
+
+				
+
+				
+			},
+			complete: function() {
+			
+			}
+		});
+
+	}
+	$("#stat-form").on('submit',function(e){
+		e.preventDefault();
+		createPost(e.target);
+	});
+
+});
+
+-->
+</script>
+<div id="content">
+	<h2>STATISTICS</h2>
+	<div>
+		{% include 'user-info.html' %}
+	</div>
+	<div>
+		<ul>
+			<li><a href="{% url 'index' %}">BACK TO HOME PAGE</a></li>
+		</ul>
+	</div>
+	{% if messages %}
+		<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+
+
+
+	<div class="statistics">
+		<form id="stat-form" role="form" method="post" action="{% url 'statistics' %}">
+		{% csrf_token %}
+		<h3>Statistics</h3>
+		<div class="wrap clearfix">
+			<div class="left">
+				<table class="mb20">
+					<tr>
+						<th>Center</th>
+						<td colspan="3">{{form.center}}</td>
+					</tr>
+					<tr>
+						<th>Activity Type</th>
+						<td colspan="3">{{form.achoice}}</td>
+					</tr>
+					<tr>
+						<th>Beneficiary Type</th>
+						<td colspan="3">{{form.bchoice}}</td>
+					</tr>
+					<tr>
+						<th>From Date</th>
+						{{form.from_date}}
+						<td>{{form.f_week}}</td>
+					</tr>
+					<tr>
+						<th>To Date</th>
+						{{form.to_date}}
+						<td>{{form.t_week}}</td>
+					</tr>
+					<tr>
+						<th>Distinct</th>
+						<td colspan="3">{{form.distinct}}</td>
+					</tr>
+
+				</table>
+				<input type="submit" name="generate" value="GENERATE" />
+			</div>
+			<div class="right">
+			{#<div id="loading" style="display:none;"><span>loading...</span></div>#}
+			<div id="form_ajax_error" style="display:none;"><span class="bold">Error occurs.</span></div>
+			<div id="form_ajax" style=""></div>
+			</div>
+		</div>
+		</form>
+
+	</div>
+
+
+
+</div>
+{% endblock %}

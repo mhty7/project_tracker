@@ -61,6 +61,7 @@ WSGI_APPLICATION = 'ngo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ATOMIC_REQUESTS':True,
     }
 }
 

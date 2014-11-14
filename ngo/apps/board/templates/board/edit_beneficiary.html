@@ -37,7 +37,7 @@
 				<th></th>
 				<th>Year</th>
 				<th>Month</th>
-				<th>Week</th>
+				{#<th>Week</th>#}
 			</tr>
 			<tr>
 				<td>From</td>
@@ -46,8 +46,8 @@
 			<tr>
 				<td>To</td>
 				{{dform.to_date}}
-				{{dform.prevtime_f}}
-				{{dform.prevtime_t}}
+				{#{{dform.prevtime_f}}#}
+				{#{{dform.prevtime_t}}#}
 			</tr>
 		</table>
 		<input type="submit" name="search" value="Search Activities" />

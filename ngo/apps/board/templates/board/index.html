@@ -14,12 +14,10 @@
 		</ul>
 	{% endif %}
 	<ul>
-		<li><a href="
-		{% url 'activity' %}
-		">Activities</a></li>
-		<li><a href="
-		{% url 'beneficiary' %}
-		">Beneficiary</a></li>
+		<li class="statistics"><a href="{% url 'statistics' %}">Statistics</a></li>
+		<li class="activities"><a href="{% url 'activity' %}">Activities</a></li>
+		<li class="beneficiaries"><a href="{% url 'beneficiary' %}">Beneficiaries</a></li>
+		<li class="mygroups"><a href="{% url 'mygroup' %}">My Groups</a></li>
 	</ul>
 </div>
 {% endblock %}
