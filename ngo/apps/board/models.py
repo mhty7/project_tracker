@@ -36,7 +36,7 @@ class Activity(models.Model):
 	#other_exp=models.DecimalField(max_digits=13,decimal_places=2,verbose_name = "Other expense")
 
 	def __str__(self):
-		return u'%s: %s' % (self.activity_ty,self.description)
+		return u'%s' % (dict(Activity.A_TYPE)[self.activity_ty],)
 
 	
 
