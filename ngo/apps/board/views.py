@@ -76,7 +76,8 @@ def view_beneficiary_history(request,from_d,to_d,ben_id,template='board/view_ben
 
 	contents=[]
 
-	q=bens.user.activities.filter(fdate__gte=f_d,tdate__lte=t_d).order_by('fdate')
+
+	q=bens.user.activities.filter(fdate__gte=f_d,fdate__lte=t_d).order_by('fdate')
 	if ty:
 		q=q.filter(activity_ty=ty)
 
